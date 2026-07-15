@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harsha's Website</title>
+    
+    <style>
+        body { 
+            background-color: #2c3e50; 
+            color: white; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            text-align: center; 
+            padding-top: 50px; 
+        }
+        h1 { 
+            color: #1abc9c; 
+        }
+        img {
+            border-radius: 15px; 
+            box-shadow: 0px 0px 20px #1abc9c; 
+            transition: 0.3s; 
+        }
+        img:hover {
+            transform: scale(1.05); 
+        }
+        /* बटन को सुंदर बनाने का कोड 👇 */
+        .my-btn {
+            background-color: #1abc9c;
+            color: white;
+            font-size: 18px;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0px 5px 15px rgba(0,0,0,0.3);
+            transition: 0.3s;
+        }
+        .my-btn:hover {
+            background-color: #1100ff;
+            transform: translateY(-3px);
+        }
+    </style>
+</head>
+<body>
+
+    <h1 style="color: rgb(17, 0, 255);">Hello, I am Harsha!</h1>
+    
+    <p style="color: blueviolet;">Welcome to my first KBC game webpage.</p>
+    
+    <img src="mahadev.png.png" alt="Mahadev Photo" width="300">
+    
+    <h1 style="color: rgb(94, 128, 0);">"Let's test your brain with Tik-Tiki Ji! ⏱️".</h1>
+    
+    <h1 style="color: aqua;">"Can you answer correctly under 30 seconds and win ₹15,000? 💰".</h1>
+    <p style="color: red;">"Use your 50-50 Lifeline wisely to beat the countdown! 📞"</p>
+
+    <!-- बटन का नया कोड यहाँ है 👇 -->
+<button class="my-btn" onclick="startKBCGame()">let's play a Game</button>
+    <!-- 1. यहाँ सिर्फ एक ही सुंदर बटन रहेगा -->
+<div style="text-align: center; margin-top: 20px;">
+</div>
+<!-- 2. KBC गेम खेलने का सुंदर बॉक्स (जो बटन दबाते ही टाइमर के साथ खुलेगा) -->
+<div id="kbc-box" style="display: none; background: #0c1020; border: 2px solid #00f2fe; padding: 20px; border-radius: 15px; max-width: 500px; margin: 20px auto; font-family: sans-serif; color: white; text-align: center;">
+    <div style="font-size: 22px; color: #ff4757; font-weight: bold; margin-bottom: 10px;">⏱️ टिक-टिकी जी: <span id="timer-text">30</span>s</div>
+    <h3 id="question-text" style="color: #00f2fe; margin: 15px 0; font-size: 18px;">Question: What is my favourite city?</h3>
+    
+    <div id="options-div" style="text-align: left;">
+        <button class="opt-btn" onclick="checkAns('a')" style="display:block; width:100%; margin:8px 0; padding:12px; background:#1e272e; color:white; border:1px solid #00f2fe; border-radius:5px; cursor:pointer; font-size: 16px;">a. Indore</button>
+        <button class="opt-btn" onclick="checkAns('b')" style="display:block; width:100%; margin:8px 0; padding:12px; background:#1e272e; color:white; border:1px solid #00f2fe; border-radius:5px; cursor:pointer; font-size: 16px;">b. Mumbai</button>
+        <button class="opt-btn" onclick="checkAns('c')" style="display:block; width:100%; margin:8px 0; padding:12px; background:#1e272e; color:white; border:1px solid #00f2fe; border-radius:5px; cursor:pointer; font-size: 16px;">c. Pune</button>
+        <button class="opt-btn" onclick="checkAns('d')" style="display:block; width:100%; margin:8px 0; padding:12px; background:#1e272e; color:white; border:1px solid #00f2fe; border-radius:5px; cursor:pointer; font-size: 16px;">d. Ahmedabad</button>
+    </div>
+    <div style="margin-top: 15px;">
+        <button id="btn-50" onclick="use5050()" style="background: #ffa500; color: black; border: none; padding: 10px 20px; font-weight: bold; border-radius: 5px; cursor: pointer; font-size: 15px;">📞 50-50 लाइफライン</button>
+    </div>
+</div>
+<!-- 3. तुम्हारा लाइव गिटहब कोडिंग प्रोग्रेस ग्राफ़ -->
+<div style="margin-top: 40px; text-align: center;">
+    <h3 style="color: #1abc9c; font-family: sans-serif;">My Live GitHub Coding Progress 📈</h3>
+    <img src="https://vercel.app" style="border-radius: 10px; max-width: 100%; box-shadow: 0 4px 15px rgba(26, 188, 156, 0.3);" />
+</div>
+<!-- 4. पूरा गेम कंट्रोल करने वाला जादुई जावास्क्रिप्ट लॉजिक -->
+ <!-- पूरा गेम और तीनों सवाल एक साथ बंद हैं -->
+<script>
+let timerInterval;
+let timeLeft = 30;
+let hasUsed5050 = false;
+let currentQuestionIndex = 0;
+
+// 🎉 १. पटाखों का फंक्शन
+function confetti() {
+    let el = document.createElement("div");
+    el.innerHTML = "🎉✨🌟🎊🥳";
+    el.style.position = "fixed";
+    el.style.top = "40%";
+    el.style.left = "50%";
+    el.style.transform = "translate(-50%, -50%)";
+    el.style.fontSize = "70px";
+    el.style.zIndex = "99999";
+    el.style.transition = "all 1s ease-out";
+    document.body.appendChild(el);
+    setTimeout(() => { el.style.opacity = "0"; el.style.transform = "translate(-50%, -150%) scale(2.5)"; }, 100);
+    setTimeout(() => { el.remove(); }, 2500);
+}
+
+// 📊 २. सवालों की पूरी लिस्ट (इसमें तीसरा सवाल जुड़ा हुआ है!)
+const questionsList = [
+    {
+        q: "Question: What is my favourite city?",
+        a: "a. Indore", b: "b. Mumbai", c: "c. Pune", d: "d. Ahmedabad",
+        correct: "b", prize: "15,000"
+    },
+    {
+        q: "Question: Who created Python Language?",
+        a: "a. Guido van Rossum", b: "b. Elon Musk", c: "c. Mark Zuckerberg", d: "d. Harry Sir",
+        correct: "a", prize: "50,000"
+    },
+    {
+        q: "Question: Which city is known as the Hollywood of India?",
+        a: "a. Indore", b: "b. Delhi", c: "c. Mumbai", d: "d. Bangalore",
+        correct: "c", prize: "1,60,000"
+    }
+];
+
+// 🎮 ३. गेम शुरू करने का फंक्शन
+function startKBCGame() {
+    currentQuestionIndex = 0;
+    hasUsed5050 = false;
+    document.getElementById("kbc-box").style.display = "block"; 
+    document.getElementById("btn-50").style.display = "inline-block";
+    loadQuestion();
+}
+
+// 📝 ४. सवाल लोड करने का फंक्शन
+function loadQuestion() {
+    let currentQ = questionsList[currentQuestionIndex];
+    document.getElementById("question-text").innerText = currentQ.q;
+    
+    let optionsDiv = document.getElementById("options-div");
+    optionsDiv.innerHTML = `
+        <button class="opt-btn" onclick="checkAns('a')" style="display:block; width:100%; margin:8px 0; padding:12px; background:#1e272e; color:white; border:1px solid #00f2fe; border-radius:5px; cursor:pointer; font-size: 16px;">${currentQ.a}</button>
+        <button class="opt-btn" onclick="checkAns('b')" style="display:block; width:100%; margin:8px 0; padding:12px; background:#1e272e; color:white; border:1px solid #00f2fe; border-radius:5px; cursor:pointer; font-size: 16px;">${currentQ.b}</button>
+        <button class="opt-btn" onclick="checkAns('c')" style="display:block; width:100%; margin:8px 0; padding:12px; background:#1e272e; color:white; border:1px solid #00f2fe; border-radius:5px; cursor:pointer; font-size: 16px;">${currentQ.c}</button>
+        <button class="opt-btn" onclick="checkAns('d')" style="display:block; width:100%; margin:8px 0; padding:12px; background:#1e272e; color:white; border:1px solid #00f2fe; border-radius:5px; cursor:pointer; font-size: 16px;">${currentQ.d}</button>
+    `;
+    startTimer();
+}
+
+// ⏱️ ५. टिक-टिकी जी (Timer) का लॉजिक
+function startTimer() {
+    timeLeft = 30;
+    document.getElementById("timer-text").innerText = timeLeft;
+    clearInterval(timerInterval);
+    
+    timerInterval = setInterval(function() {
+        timeLeft--;
+        document.getElementById("timer-text").innerText = timeLeft;
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            alert("⏰ समय समाप्त! आप गेम हार गए।");
+            document.getElementById("kbc-box").style.display = "none";
+        }
+    }, 1000);
+}
+
+// 📞 ६. 50-50 लाइफलाइन
+function use5050() {
+    if (!hasUsed5050) {
+        hasUsed5050 = true;
+        document.getElementById("btn-50").style.display = "none"; 
+        alert("📞 50-50 लाइफलाइन इस्तेमाल हुई! दो गलत विकल्प गायब हो गए।");
+        let options = document.getElementsByClassName("opt-btn");
+        options[0].style.visibility = "hidden"; // a गायब
+        options[3].style.visibility = "hidden"; // d गायब
+    }
+}
+
+// ✅ ७. जवाब चेक करने का फंक्शन
+function checkAns(choice) {
+    clearInterval(timerInterval); 
+    let currentQ = questionsList[currentQuestionIndex];
+    
+    if (choice === currentQ.correct) {
+        confetti(); 
+        alert("🎉 Correct answer! You won Rs. " + currentQ.prize);
+        
+        if (currentQuestionIndex < questionsList.length - 1) {
+            currentQuestionIndex++;
+            loadQuestion(); // अगला सवाल लोड होगा
+        } else {
+            alert("🏆 बहुत-बहुत बधाई! आपने हर्षा का पूरा KBC गेम जीत लिया है!");
+            document.getElementById("kbc-box").style.display = "none";
+        }
+    } else {
+        alert("❌ Wrong answer! Game Over.");
+        document.getElementById("kbc-box").style.display = "none";
+    }
+}
+</script>
+</body>
+</html>
