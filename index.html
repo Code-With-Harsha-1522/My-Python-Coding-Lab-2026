@@ -71,22 +71,23 @@
         <button class="opt-btn" onclick="checkAns('b')" style="display:block; width:100%; margin:8px 0; padding:12px; background:#1e272e; color:white; border:1px solid #00f2fe; border-radius:5px; cursor:pointer; font-size: 16px;">b. Mumbai</button>
         <button class="opt-btn" onclick="checkAns('c')" style="display:block; width:100%; margin:8px 0; padding:12px; background:#1e272e; color:white; border:1px solid #00f2fe; border-radius:5px; cursor:pointer; font-size: 16px;">c. Pune</button>
         <button class="opt-btn" onclick="checkAns('d')" style="display:block; width:100%; margin:8px 0; padding:12px; background:#1e272e; color:white; border:1px solid #00f2fe; border-radius:5px; cursor:pointer; font-size: 16px;">d. Ahmedabad</button>
-    </div>
+        </div>
+    
     <div style="margin-top: 15px;">
         <button id="btn-50" onclick="use5050()" style="background: #ffa500; color: black; border: none; padding: 10px 20px; font-weight: bold; border-radius: 5px; cursor: pointer; font-size: 15px;">📞 50-50 लाइफライン</button>
     </div>
 </div>
+
 <!-- 3. तुम्हारा लाइव गिटहब कोडिंग प्रोग्रेस ग्राफ़ -->
 <div style="margin-top: 40px; text-align: center;">
     <h3 style="color: #1abc9c; font-family: sans-serif;">My Live GitHub Coding Progress 📈</h3>
     <img src="https://vercel.app" style="border-radius: 10px; max-width: 100%; box-shadow: 0 4px 15px rgba(26, 188, 156, 0.3);" />
 </div>
-<!-- 4. पूरा गेम कंट्रोल करने वाला जादुई जावास्क्रिप्ट लॉजिक -->
- <!-- पूरा गेम और तीनों सवाल एक साथ बंद हैं -->
 <script>
 let timerInterval;
 let timeLeft = 30;
 let hasUsed5050 = false;
+let hasUsedPoll = false;
 let currentQuestionIndex = 0;
 
 // 🎉 १. पटाखों का फंक्शन
@@ -105,22 +106,25 @@ function confetti() {
     setTimeout(() => { el.remove(); }, 2500);
 }
 
-// 📊 २. सवालों की पूरी लिस्ट (इसमें तीसरा सवाल जुड़ा हुआ है!)
+// 📊 २. सवालों की पूरी लिस्ट
 const questionsList = [
     {
         q: "Question: What is my favourite city?",
         a: "a. Indore", b: "b. Mumbai", c: "c. Pune", d: "d. Ahmedabad",
-        correct: "b", prize: "15,000"
+        correct: "b", prize: "15,000",
+        poll: "A: 10%, B: 75%, C: 12%, D: 3%"
     },
     {
         q: "Question: Who created Python Language?",
         a: "a. Guido van Rossum", b: "b. Elon Musk", c: "c. Mark Zuckerberg", d: "d. Harry Sir",
-        correct: "a", prize: "50,000"
+        correct: "a", prize: "50,000",
+        poll: "A: 82%, B: 5%, C: 3%, D: 10%"
     },
     {
         q: "Question: Which city is known as the Hollywood of India?",
         a: "a. Indore", b: "b. Delhi", c: "c. Mumbai", d: "d. Bangalore",
-        correct: "c", prize: "1,60,000"
+        correct: "c", prize: "1,60,000",
+        poll: "A: 8%, B: 12%, C: 70%, D: 10%"
     }
 ];
 
@@ -128,27 +132,49 @@ const questionsList = [
 function startKBCGame() {
     currentQuestionIndex = 0;
     hasUsed5050 = false;
+    hasUsedPoll = false;
     document.getElementById("kbc-box").style.display = "block"; 
     document.getElementById("btn-50").style.display = "inline-block";
+    
+    // ऑडियंस पोल का बटन सेट करना
+    if(!document.getElementById("btn-poll")) {
+        let pollBtn = document.createElement("button");
+        pollBtn.id = "btn-poll";
+        pollBtn.innerText = "👥 ऑडियंस पोल";
+        pollBtn.onclick = useAudiencePoll;
+        pollBtn.style = "background: #1abc9c; color: white; border: none; padding: 10px 20px; font-weight: bold; border-radius: 5px; cursor: pointer; font-size: 15px; margin-left: 10px;";
+        document.getElementById("btn-50").parentNode.appendChild(pollBtn);
+    } else {
+        document.getElementById("btn-poll").style.display = "inline-block";
+    }
+    
     loadQuestion();
 }
 
-// 📝 ४. सवाल लोड करने का फंक्शन
+// 📝 ४. सवाल स्क्रीन पर लोड करने का फंक्शन
 function loadQuestion() {
     let currentQ = questionsList[currentQuestionIndex];
     document.getElementById("question-text").innerText = currentQ.q;
     
     let optionsDiv = document.getElementById("options-div");
     optionsDiv.innerHTML = `
-        <button class="opt-btn" onclick="checkAns('a')" style="display:block; width:100%; margin:8px 0; padding:12px; background:#1e272e; color:white; border:1px solid #00f2fe; border-radius:5px; cursor:pointer; font-size: 16px;">${currentQ.a}</button>
-        <button class="opt-btn" onclick="checkAns('b')" style="display:block; width:100%; margin:8px 0; padding:12px; background:#1e272e; color:white; border:1px solid #00f2fe; border-radius:5px; cursor:pointer; font-size: 16px;">${currentQ.b}</button>
-        <button class="opt-btn" onclick="checkAns('c')" style="display:block; width:100%; margin:8px 0; padding:12px; background:#1e272e; color:white; border:1px solid #00f2fe; border-radius:5px; cursor:pointer; font-size: 16px;">${currentQ.c}</button>
-        <button class="opt-btn" onclick="checkAns('d')" style="display:block; width:100%; margin:8px 0; padding:12px; background:#1e272e; color:white; border:1px solid #00f2fe; border-radius:5px; cursor:pointer; font-size: 16px;">${currentQ.d}</button>
+        <button class="opt-btn" onclick="checkAns('a')" style="display:block; width:100%; margin:8px 0; padding:12px; background:#1e272e; color:white; border:1px solid #00f2fe; border-radius:5px; cursor:pointer; font-size: 16px; transition: 0.3s;">${currentQ.a}</button>
+        <button class="opt-btn" onclick="checkAns('b')" style="display:block; width:100%; margin:8px 0; padding:12px; background:#1e272e; color:white; border:1px solid #00f2fe; border-radius:5px; cursor:pointer; font-size: 16px; transition: 0.3s;">${currentQ.b}</button>
+        <button class="opt-btn" onclick="checkAns('c')" style="display:block; width:100%; margin:8px 0; padding:12px; background:#1e272e; color:white; border:1px solid #00f2fe; border-radius:5px; cursor:pointer; font-size: 16px; transition: 0.3s;">${currentQ.c}</button>
+        <button class="opt-btn" onclick="checkAns('d')" style="display:block; width:100%; margin:8px 0; padding:12px; background:#1e272e; color:white; border:1px solid #00f2fe; border-radius:5px; cursor:pointer; font-size: 16px; transition: 0.3s;">${currentQ.d}</button>
     `;
+    
+    // बटन्स पर माउस ले जाने पर चमकाने का इफ़ेक्ट
+    let btns = document.getElementsByClassName("opt-btn");
+    for(let i=0; i<btns.length; i++) {
+        btns[i].onmouseover = function() { this.style.background = "#00f2fe"; this.style.color = "black"; this.style.boxShadow = "0 0 15px #00f2fe"; };
+        btns[i].onmouseout = function() { this.style.background = "#1e272e"; this.style.color = "white"; this.style.boxShadow = "none"; };
+    }
+    
     startTimer();
 }
 
-// ⏱️ ५. टिक-टिकी जी (Timer) का लॉजिक
+// ⏱️ ५. टिक-टिकी जी (Timer + Sound) का लॉजिक
 function startTimer() {
     timeLeft = 30;
     document.getElementById("timer-text").innerText = timeLeft;
@@ -157,6 +183,21 @@ function startTimer() {
     timerInterval = setInterval(function() {
         timeLeft--;
         document.getElementById("timer-text").innerText = timeLeft;
+        
+        // 🔊 टिक-टिक बीप साउंड पैदा करने का कोड
+        try {
+            let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            let osc = audioCtx.createOscillator();
+            let gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(800, audioCtx.currentTime); 
+            gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+            osc.start();
+            setTimeout(() => osc.stop(), 40); 
+        } catch(e) { console.log("Audio error"); }
+        
         if (timeLeft <= 0) {
             clearInterval(timerInterval);
             alert("⏰ समय समाप्त! आप गेम हार गए।");
@@ -165,7 +206,7 @@ function startTimer() {
     }, 1000);
 }
 
-// 📞 ६. 50-50 लाइफलाइन
+// 📞 ६. 50-50 लाइफलाइन का लॉजिक
 function use5050() {
     if (!hasUsed5050) {
         hasUsed5050 = true;
@@ -177,7 +218,17 @@ function use5050() {
     }
 }
 
-// ✅ ७. जवाब चेक करने का फंक्शन
+// 👥 ७. ऑडियंस पोल लाइफलाइन का लॉजिक
+function useAudiencePoll() {
+    if (!hasUsedPoll) {
+        hasUsedPoll = true;
+        document.getElementById("btn-poll").style.display = "none";
+        let currentQ = questionsList[currentQuestionIndex];
+        alert("👥 ऑडियंस पोल के नतीजे आ चुके हैं:\n\n" + currentQ.poll + "\n\nज्यादातर ऑडियंस सही जवाब की तरफ इशारा कर रही है!");
+    }
+}
+
+// ✅ ८. जवाब चेक करने का फंक्शन
 function checkAns(choice) {
     clearInterval(timerInterval); 
     let currentQ = questionsList[currentQuestionIndex];
@@ -188,9 +239,9 @@ function checkAns(choice) {
         
         if (currentQuestionIndex < questionsList.length - 1) {
             currentQuestionIndex++;
-            loadQuestion(); // अगला सवाल लोड होगा
+            loadQuestion(); 
         } else {
-            alert("🏆 बहुत-बहुत बधाई! आपने हर्षा का पूरा KBC गेम जीत लिया है!");
+            alert("🏆 बहुत-बहुत बधाई! आपने हर्ष का पूरा KBC गेम जीत लिया है!");
             document.getElementById("kbc-box").style.display = "none";
         }
     } else {
@@ -199,5 +250,3 @@ function checkAns(choice) {
     }
 }
 </script>
-</body>
-</html>
